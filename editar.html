@@ -10,10 +10,8 @@
 <label for="photo-size">Tamanho da foto <output id="photo-size-output">120%</output></label><input id="photo-size" type="range" min="70" max="160" step="1">
 <label for="photo-x">Posição horizontal <output id="photo-x-output">50%</output></label><input id="photo-x" type="range" min="10" max="90" step="1">
 <label for="photo-y">Posição vertical <output id="photo-y-output">50%</output></label><input id="photo-y" type="range" min="10" max="90" step="1">
-<label for="photo-layer">Posição em relação à borda</label><select id="photo-layer"><option value="front">Foto na frente da borda</option><option value="behind">Foto atrás da borda</option></select>
-<label for="ring-size">Tamanho da moldura <output id="ring-size-output">100%</output></label><input id="ring-size" type="range" min="70" max="120" step="1">
-<label for="ring-width">Espessura da moldura <output id="ring-width-output">18 px</output></label><input id="ring-width" type="range" min="8" max="32" step="1"></fieldset>
-<fieldset><legend>Tema e estilo</legend><label for="style">Estilo</label><select id="style"><option value="matrix">Hacker / Matrix</option><option value="coral">Tecnológico coral</option><option value="neon">Futurista azul</option><option value="minimal">Minimalista</option></select><label for="bg">Fundo</label><input id="bg" type="color"><label for="accent">Destaque</label><input id="accent" type="color"></fieldset>
+<label for="photo-layer">Posição em relação à borda</label><select id="photo-layer"><option value="front">Foto na frente da borda</option><option value="behind">Foto atrás da borda</option></select></fieldset>
+<fieldset><legend>Tema e estilo</legend><label for="style">Estilo</label><select id="style"><option value="coral">Tecnológico coral</option><option value="neon">Futurista azul</option><option value="minimal">Minimalista</option></select><label for="bg">Fundo</label><input id="bg" type="color"><label for="accent">Destaque</label><input id="accent" type="color"></fieldset>
 <fieldset><legend>Projetos</legend><div id="projects"></div><button id="add">Adicionar projeto</button></fieldset>
 </div><div class="preview"><iframe id="preview" title="Prévia do portfólio" sandbox=""></iframe></div></main>
 <script>
@@ -25,7 +23,6 @@ const clamp = (value, fallback, min, max) => {
   return Number.isFinite(number) ? Math.min(max,Math.max(min,number)) : fallback;
 };
 const presets = {
-  matrix: ['#020805','#39ff14'],
   coral: ['#101d26','#ff8c75'],
   neon: ['#090e19','#7ce9ff'],
   minimal: ['#15171c','#e2bd8d']
@@ -180,19 +177,16 @@ function build() {
   theme.dataset.photoX = draft.photoX;
   theme.dataset.photoY = draft.photoY;
   theme.dataset.photoLayer = draft.photoLayer;
-  theme.dataset.ringSize = draft.ringSize;
-  theme.dataset.ringWidth = draft.ringWidth;
-  theme.textContent = ':root{--bg:'+draft.bg+';--green:'+draft.accent+';--green-soft:color-mix(in srgb,'+draft.accent+' 72%,white);--line:color-mix(in srgb,'+draft.accent+' 38%,var(--bg));--coral:'+draft.accent+';--peach:'+draft.accent+';--panel:color-mix(in srgb,var(--bg) 90%,white)}' +
+  theme.textContent = ':root{--bg:'+draft.bg+';--coral:'+draft.accent+';--peach:'+draft.accent+';--panel:color-mix(in srgb,var(--bg) 90%,white)}' +
     '.hero,.emblem{background:radial-gradient(circle at 75% 50%,color-mix(in srgb,var(--coral) 16%,transparent),transparent 65%)}' +
     '.emblem-ring{box-shadow:0 0 2rem color-mix(in srgb,var(--coral) 30%,transparent)}' +
     (draft.style === 'minimal' ? '.hero,.emblem,#contato,article{background:var(--bg);box-shadow:none}.emblem::before,.emblem::after{display:none}.emblem-ring{box-shadow:none;border-width:3px}' :
-     draft.style === 'neon' ? '.hero{background:repeating-linear-gradient(90deg,transparent 0 39px,#ffffff12 39px 40px)}.emblem-ring{box-shadow:none}' :
-     draft.style === 'matrix' ? 'body::before{opacity:.28}.hero{background-image:linear-gradient(90deg,#010805 0%,#010805e8 30%,#01080542 100%),url("./assets/hacker-workspace.png")}' : '');
+     draft.style === 'neon' ? '.hero{background:repeating-linear-gradient(90deg,transparent 0 39px,#ffffff12 39px 40px)}.emblem-ring{box-shadow:none}' : '');
   const photoZ = draft.photoLayer === 'behind' ? 1 : 2;
   const ringZ = draft.photoLayer === 'behind' ? 2 : 1;
   theme.textContent +=
-    '.emblem-ring:has(img){position:relative!important;isolation:isolate!important;overflow:visible!important;width:'+draft.ringSize+'%!important;border:0!important;background:var(--bg)!important;box-shadow:none!important}' +
-    '.emblem-ring:has(img)::before{content:"";position:absolute;z-index:'+ringZ+';inset:0;border:'+draft.ringWidth+'px solid transparent;border-radius:50%;pointer-events:none;background:linear-gradient(to bottom,color-mix(in srgb,var(--coral) 58%,white) 0%,var(--coral) 42%,color-mix(in srgb,var(--coral) 24%,var(--bg)) 78%,transparent 100%) border-box;mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0);mask-composite:exclude;-webkit-mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor}' +
+    '.emblem-ring:has(img){position:relative!important;isolation:isolate!important;overflow:visible!important;width:92%!important;border:0!important;background:var(--bg)!important;box-shadow:none!important}' +
+    '.emblem-ring:has(img)::before{content:"";position:absolute;z-index:'+ringZ+';inset:0;border:clamp(14px,2.5vw,22px) solid transparent;border-radius:50%;pointer-events:none;background:linear-gradient(to bottom,color-mix(in srgb,var(--coral) 58%,white) 0%,var(--coral) 42%,color-mix(in srgb,var(--coral) 24%,var(--bg)) 78%,transparent 100%) border-box;mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0);mask-composite:exclude;-webkit-mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor}' +
     '.emblem-ring:has(img) img{position:absolute!important;z-index:'+photoZ+'!important;width:'+draft.photoSize+'%!important;height:'+draft.photoSize+'%!important;max-width:none!important;left:'+draft.photoX+'%!important;top:'+draft.photoY+'%!important;bottom:auto!important;transform:translate(-50%,-50%)!important;object-fit:contain!important;object-position:center center!important;border-radius:0!important;mask:none!important;-webkit-mask:none!important}';
   doc.head.append(theme);
   return '<!doctype html>\n'+doc.documentElement.outerHTML;
@@ -219,18 +213,14 @@ async function init() {
     photoX:clamp(theme?.dataset.photoX,50,10,90),
     photoY:clamp(theme?.dataset.photoY,50,10,90),
     photoLayer:theme?.dataset.photoLayer === 'behind' ? 'behind' : 'front',
-    ringSize:clamp(theme?.dataset.ringSize,100,70,120),
-    ringWidth:clamp(theme?.dataset.ringWidth,18,8,32),
-    style:theme?.dataset.style || 'matrix',
-    bg:theme?.dataset.bg || presets.matrix[0],
-    accent:theme?.dataset.accent || presets.matrix[1]
+    style:theme?.dataset.style || 'coral',
+    bg:theme?.dataset.bg || presets.coral[0],
+    accent:theme?.dataset.accent || presets.coral[1]
   };
   try { draft = JSON.parse(localStorage.getItem(key)) || defaults; } catch { draft = defaults; }
   draft.photoSize = clamp(draft.photoSize,120,70,160);
   draft.photoX = clamp(draft.photoX,50,10,90);
   draft.photoY = clamp(draft.photoY,50,10,90);
-  draft.ringSize = clamp(draft.ringSize,100,70,120);
-  draft.ringWidth = clamp(draft.ringWidth,18,8,32);
   draft.photoLayer = draft.photoLayer === 'behind' ? 'behind' : 'front';
   draft.projects.forEach(project => {
     const current = defaults.projects.find(item => item.url === project.url);
@@ -252,18 +242,16 @@ async function init() {
     el(id).oninput = () => { draft[id] = el(id).value; queuePreview(); };
   }
   const photoControls = [
-    ['photo-size','photoSize','photo-size-output',70,160,'%'],
-    ['photo-x','photoX','photo-x-output',10,90,'%'],
-    ['photo-y','photoY','photo-y-output',10,90,'%'],
-    ['ring-size','ringSize','ring-size-output',70,120,'%'],
-    ['ring-width','ringWidth','ring-width-output',8,32,' px']
+    ['photo-size','photoSize','photo-size-output'],
+    ['photo-x','photoX','photo-x-output'],
+    ['photo-y','photoY','photo-y-output']
   ];
-  photoControls.forEach(([control,property,output,min,max,unit]) => {
+  photoControls.forEach(([control,property,output]) => {
     el(control).value = draft[property];
-    el(output).textContent = draft[property] + unit;
+    el(output).textContent = draft[property] + '%';
     el(control).oninput = () => {
-      draft[property] = clamp(el(control).value,draft[property],min,max);
-      el(output).textContent = draft[property] + unit;
+      draft[property] = clamp(el(control).value,50,10,160);
+      el(output).textContent = draft[property] + '%';
       queuePreview();
     };
   });

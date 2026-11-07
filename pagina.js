@@ -27,7 +27,6 @@
           if (link.getAttribute("href") === file) link.setAttribute("aria-current", "page");
         });
         document.body.prepend(clonedHeader);
-        window.refreshPortfolioTheme?.();
       }
       const selected = page.sections
         .map(id => source.querySelector("#" + id))
