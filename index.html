@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Portfólio de Robson Costa. Suporte técnico, sustentação de sistemas e projetos próprios em tecnologia.">
+<title>Robson Costa | Portfólio de TI</title>
+<style>
+:root {
+  color-scheme: dark;
+  --bg:#090e19; --panel:#101a2b; --line:#283851;
+  --text:#f2f6ff; --muted:#b1bfd3; --cyan:#7ce9ff; --violet:#b9adff;
+}
+* { box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { margin:0; background:var(--bg); color:var(--text); font:1rem/1.65 system-ui,sans-serif; }
+a { color:var(--cyan); text-underline-offset:.25em; }
+a:hover { color:white; }
+a:focus-visible { outline:2px solid var(--cyan); outline-offset:5px; }
+.wrap { width:min(1120px,calc(100% - 2.5rem)); margin:auto; }
+header,footer,section+section { border-top:1px solid var(--line); }
+nav,.links { display:flex; gap:1rem; align-items:center; flex-wrap:wrap; }
+nav { justify-content:space-between; padding:1rem 0; }
+nav a { color:var(--muted); text-decoration:none; }
+.brand { display:inline-flex; align-items:center; gap:.75rem; color:var(--text); }
+.mark { display:grid; place-items:center; width:2.25rem; aspect-ratio:1; border:1px solid #42718d; border-radius:.5rem; color:var(--cyan); font:700 .8rem ui-monospace,monospace; }
+section { padding:clamp(3rem,6vw,5rem) 0; }
+.hero {
+  padding:clamp(4rem,9vw,7.5rem) 0;
+  background:radial-gradient(ellipse at 82% 45%,#192c50 0,transparent 56%);
+}
+.hero-grid { display:grid; grid-template-columns:minmax(0,1.35fr) minmax(0,1fr); gap:clamp(2rem,6vw,5rem); align-items:center; }
+.tag { color:var(--cyan); font:700 .75rem/1.5 ui-monospace,monospace; letter-spacing:.12em; text-transform:uppercase; }
+h1,h2,h3,p { margin-top:0; }
+h1 { font-size:clamp(3.1rem,8vw,6.75rem); line-height:.98; letter-spacing:-.075em; margin-bottom:1.25rem; }
+h1 span { display:block; color:var(--cyan); }
+h2 { font-size:clamp(1.9rem,4vw,3.15rem); line-height:1.1; letter-spacing:-.045em; }
+h3 { font-size:1.25rem; margin-bottom:.5rem; }
+p { color:var(--muted); }
+.lead { max-width:38rem; font-size:1.15rem; }
+.button { display:inline-block; background:var(--cyan); color:#081420; border:1px solid var(--cyan); border-radius:.4rem; padding:.72rem 1rem; text-decoration:none; font-weight:750; }
+.button:hover { background:white; color:#081420; }
+.secondary { background:transparent; color:var(--text); border-color:var(--line); }
+.signal {
+  width:100%; max-width:420px; justify-self:center;
+  border:1px solid #3c567b; border-radius:1rem; overflow:hidden;
+  background:linear-gradient(150deg,#132039,#0b1220); box-shadow:0 24px 70px #04081099;
+}
+.signal-head,.signal-foot { padding:.8rem 1rem; margin:0; }
+.signal-head { border-bottom:1px solid var(--line); }
+.signal-foot { border-top:1px solid var(--line); color:var(--muted); font:.76rem/1.5 ui-monospace,monospace; }
+.signal svg { display:block; width:100%; height:auto; }
+.grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1rem; }
+article { background:linear-gradient(145deg,#142037,var(--panel)); border:1px solid var(--line); padding:clamp(1.2rem,3vw,1.85rem); border-radius:.75rem; }
+article p:last-child { margin-bottom:0; }
+#projetos article { border-top:2px solid #537e9f; }
+#projetos article:nth-child(2) { border-top-color:#9181d3; }
+#projetos article .tag { color:var(--violet); }
+#projetos article a { font-weight:700; }
+.chips { list-style:none; padding:0; display:flex; gap:.6rem; flex-wrap:wrap; }
+.chips li { border:1px solid var(--line); background:var(--panel); padding:.35rem .75rem; border-radius:2rem; }
+#contato { background:linear-gradient(115deg,#111a2d,var(--bg)); }
+footer { padding:1.15rem 0; color:var(--muted); font-size:.9rem; }
+@media(max-width:760px) {
+  .hero-grid { grid-template-columns:1fr; }
+  .signal { justify-self:start; }
+}
+@media(max-width:570px) {
+  .grid { grid-template-columns:1fr; }
+  nav .links { gap:.8rem; font-size:.9rem; }
+}
+@media(prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } }
+</style>
+</head>
+<body>
+<header><nav class="wrap" aria-label="Navegação principal"><a class="brand" href="#inicio"><span class="mark" aria-hidden="true">RC</span><strong>Robson Costa</strong></a><div class="links"><a href="#experiencia">Experiência</a><a href="#projetos">Projetos</a><a href="#contato">Contato</a></div></nav></header>
+<main id="inicio">
+<section class="hero"><div class="wrap hero-grid"><div><p class="tag">Profissional de tecnologia</p><h1>Robson <span>Costa</span></h1><p class="lead">Atuo com suporte técnico e sustentação de sistemas. Investigo problemas que afetam a operação, ajudo usuários e desenvolvo projetos próprios para necessidades do dia a dia.</p><div class="links"><a class="button" href="#projetos">Conheça meus projetos</a><a class="button secondary" href="#experiencia">Veja minha experiência</a></div></div><div class="signal" aria-hidden="true">
+<p class="tag signal-head">Mapa de atuação</p>
+<svg viewBox="0 0 420 224" xmlns="http://www.w3.org/2000/svg">
+<defs><pattern id="grid-pattern" width="21" height="21" patternUnits="userSpaceOnUse"><path d="M21 0H0V21" fill="none" stroke="#273959" stroke-width="1"/></pattern><linearGradient id="signal-color"><stop stop-color="#7ce9ff"/><stop offset="1" stop-color="#b9adff"/></linearGradient></defs>
+<rect width="420" height="224" fill="url(#grid-pattern)"/>
+<g fill="none" stroke="url(#signal-color)" stroke-width="1.4"><circle cx="210" cy="112" r="74" opacity=".36"/><circle cx="210" cy="112" r="51" opacity=".65"/><path d="M48 54h61l33 33h20m96 50h22l32 32h60M48 169h61l33-32h20m96-50h22l32-33h60"/><circle cx="48" cy="54" r="4"/><circle cx="48" cy="169" r="4"/><circle cx="372" cy="54" r="4"/><circle cx="372" cy="169" r="4"/></g>
+<rect x="181" y="83" width="58" height="58" rx="12" fill="#14243c" stroke="#7ce9ff"/><text x="210" y="120" text-anchor="middle" fill="#e9f8ff" font-family="monospace" font-size="22" font-weight="bold">RC</text>
+</svg>
+<p class="signal-foot">Suporte técnico · Sistemas · Desenvolvimento</p>
+</div></div></section>
+<section id="experiencia"><div class="wrap"><p class="tag">Trajetória</p><h2>Experiência profissional</h2><div class="grid">
+<article><p class="tag">2023 até hoje</p><h3>Procfit</h3><p>Assistente de Suporte Técnico Pleno</p><p>Atuo na sustentação de ERP para o varejo farmacêutico e investigo incidentes no PDV e na retaguarda. Ajustei índices no banco de dados para agilizar a finalização de vendas que chegavam a levar minutos.</p></article>
+<article><p class="tag">2022 a 2023</p><h3>Tribunal Regional do Trabalho da 7ª Região</h3><p>Assistente de Suporte Técnico</p><p>Atendi chamados, orientei usuários e diagnostiquei falhas em computadores, programas, periféricos e conexões de rede.</p></article>
+</div></div></section>
+<section id="projetos"><div class="wrap"><p class="tag">Desenvolvimento</p><h2>Projetos próprios</h2><div class="grid">
+<article><p class="tag">01 / Carteira familiar</p><h3>Mar IA</h3><p>Carteira financeira pessoal e familiar com controle de movimentações, lista de compras, registro de despesas pelo Telegram e suporte a uso offline.</p><a href="https://github.com/Shift-ky/Mar-IA">Mar IA no GitHub</a></article>
+<article><p class="tag">02 / Finanças pessoais</p><h3>Pocket Friends</h3><p>Minha primeira carteira financeira digital, criada para acompanhar receitas, despesas e saldos. O projeto serviu de base para o Mar IA.</p><a href="https://github.com/Shift-ky/pocket-friend-balance">Pocket Friends no GitHub</a></article>
+</div></div></section>
+<section id="competencias"><div class="wrap"><h2>Competências e formação</h2><ul class="chips"><li>Suporte técnico</li><li>Atendimento a usuários</li><li>Diagnóstico de hardware e software</li><li>Sustentação de ERP</li><li>Investigação de incidentes</li><li>SQL Server e T-SQL</li><li>Desenvolvimento web</li></ul><p>Técnico em Análise e Desenvolvimento de Sistemas pelo SENAI. Cursando tecnólogo na mesma área.</p></div></section>
+<section id="contato"><div class="wrap"><h2>Vamos conversar?</h2><p>Tenho interesse em novas oportunidades e em assumir diferentes responsabilidades na área de TI.</p><div class="links"><a class="button" href="https://www.linkedin.com/in/robson-costa-81202912b/">LinkedIn</a><a href="https://github.com/Shift-ky">GitHub</a></div></div></section>
+</main>
+<footer><div class="wrap">Robson Costa · Portfólio profissional</div></footer>
+</body>
+</html>
