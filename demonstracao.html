@@ -6,16 +6,42 @@
 <title>Demonstração do projeto</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#0c1520;color:#edf5ff;font:14px/1.45 system-ui,sans-serif}main{max-width:780px;margin:auto;padding:14px}h1,h2,p{margin:0 0 9px}h1{font-size:1.6rem}h2{font-size:1.2rem}header p,small{color:#c4d2e3}.badge{color:#7df5d0;font-weight:bold}nav,.actions,form,.totals{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}button,input,select{font:inherit;border:1px solid #567084;border-radius:7px;padding:6px 8px;background:#192a3c;color:#fff}button{cursor:pointer}button[aria-current],form button{background:#7df5d0;color:#10201d;border-color:#7df5d0}input{width:min(100%,155px)}label{display:grid;gap:2px}article,.totals>div{background:#142334;border:1px solid #354d64;border-radius:8px;padding:9px;margin-bottom:6px}.row{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px;align-items:center}.row strong{overflow-wrap:anywhere}.totals>div{flex:1;min-width:100px}.totals strong{display:block;color:#7df5d0}#notice{color:#7df5d0;min-height:1.4em}
+
+:root{color-scheme:dark;font-family:Montserrat,Arial,sans-serif}
+body{background:var(--bg);color:var(--fg);font-family:inherit}
+html[data-app=mar]{--bg:#071426;--fg:#e6eaf1;--surface:#10243d;--border:#2b4664;--accent:#00e0ff;--primary:#006dff;--muted:#a3b4c8;--on-primary:white}
+html[data-app=pocket]{--bg:oklch(.21 .05 262);--fg:oklch(.93 .02 250);--surface:oklch(.26 .06 262);--border:oklch(.34 .06 262);--accent:oklch(.86 .13 210);--primary:var(--accent);--muted:oklch(.72 .04 250);--on-primary:oklch(.2 .05 262)}
+main{max-width:1050px;padding:14px;display:grid;gap:12px}
+header,article,.totals>div{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px}
+header p,small{color:var(--muted)}header h1{margin-top:5px}h2{font-size:1.35rem}
+nav{margin:0;gap:5px}button,input,select{background:var(--surface);color:var(--fg);border-color:var(--border)}
+button[aria-current],form button{background:var(--primary);border-color:var(--primary);color:var(--on-primary)}
+.badge,#notice,.totals strong{color:var(--accent)}
+[data-app=mar] .totals>div:first-child{background:linear-gradient(125deg,#074096,#006dff);border-color:#2d79ed}
+[data-app=mar] .totals>div:first-child strong{color:white}
+[data-app=pocket] nav{justify-content:center;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:5px}
+[data-app=pocket] nav button{border-radius:999px}
+[data-app=pocket] .totals>div{border-radius:16px}
+[data-app=pocket] .totals>div:nth-child(2) strong{color:oklch(.78 .14 160)}
+[data-app=pocket] .totals>div:nth-child(3) strong{color:oklch(.72 .15 20)}
+@media(min-width:570px){
+  [data-app=mar] main{grid-template-columns:165px minmax(0,1fr);align-items:start}
+  [data-app=mar] header,[data-app=mar] nav{grid-column:1;align-self:start}
+  [data-app=mar] nav{grid-row:2 / span 3;display:grid;background:var(--surface);padding:8px;border-radius:10px}
+  [data-app=mar] nav button{text-align:left}
+  [data-app=mar] .workspace{grid-column:2;grid-row:1 / span 4}
+}
 </style>
 <main>
 <header><span class="badge">DEMONSTRAÇÃO · DADOS FICTÍCIOS</span><h1 id="brand"></h1><p>Teste à vontade. Ao recarregar, as alterações são descartadas.</p><button id="reset" type="button">Reiniciar demonstração</button></header>
 <nav id="nav" aria-label="Páginas da demonstração"></nav>
-<h2 id="heading"></h2>
+<div class="workspace"><h2 id="heading"></h2>
 <p id="notice" role="status"></p>
-<section id="view"></section>
+<section id="view"></section></div>
 </main>
 <script>
 const pocket = new URLSearchParams(location.search).get('projeto') === 'pocket';
+document.documentElement.dataset.app = pocket ? 'pocket' : 'mar';
 const pages = pocket ? ['Painel','Finanças','Carteiras','Contas fixas','Metas','Feira','Estoque','Conferência','Moto','Administração'] :
   ['Visão geral','Lançamentos','Contas a pagar','Cartões','Metas','Lista de compras','Telegram','Família e acessos','Meu cadastro','Administração geral'];
 const specs = {
