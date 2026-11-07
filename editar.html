@@ -193,7 +193,14 @@ async function init() {
   };
   try { draft = JSON.parse(localStorage.getItem(key)) || defaults; } catch { draft = defaults; }
   draft.projects.forEach(project => {
-    if (project.demo === undefined) project.demo = defaults.projects.find(item => item.url === project.url)?.demo || '';
+    const current = defaults.projects.find(item => item.url === project.url);
+    const retiredPreviews = {
+      'https://github.com/Shift-ky/Mar-IA':'https://shift-ky.github.io/Mar-IA/',
+      'https://github.com/Shift-ky/pocket-friend-balance':'https://pocket-friend-balance.lovable.app'
+    };
+    if (project.demo === undefined || (current && project.demo && project.demo.replace(/\/$/,'') === retiredPreviews[project.url]?.replace(/\/$/,''))) {
+      project.demo = current?.demo || '';
+    }
   });
   textFields.forEach(([label],index) => field(el('texts'),label,draft.texts[index],value => { draft.texts[index] = value; },'textarea'));
   renderProjects();
