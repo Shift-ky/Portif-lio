@@ -8,7 +8,7 @@
 - Implementação estática em HTML, CSS e JavaScript, sem framework ou build.
 - O GitHub Pages serve o conteúdo do repositório.
 - `pagina.js` renderiza as páginas dedicadas usando as seções do `index.html`.
-- `editar.html` é o editor; o Worker autenticado do Cloudflare escreve `index.html) em `main`.
+- `editar.html` é o editor; o Worker autenticado do Cloudflare escreve `index.html` em `main`.
 - `demonstracao.html` fornece as prévias incorporadas de Mar IA e Pocket Friends.
 
 ## Diagnóstico inicial
