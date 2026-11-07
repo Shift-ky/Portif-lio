@@ -97,7 +97,10 @@ footer { padding:1.15rem 0; color:var(--muted); font-size:.9rem; }
   position:relative;
   overflow:visible;
   width:88%;
-  background:linear-gradient(to top,var(--bg) 0%,var(--bg) 35%,color-mix(in srgb,#eefaff 82%,var(--coral)) 100%);
+  border:clamp(10px,2vw,18px) solid transparent;
+  background:
+    linear-gradient(to top,var(--bg) 0%,color-mix(in srgb,var(--bg) 82%,#263f4e) 100%) padding-box,
+    linear-gradient(to top,#963d35 0%,#f16955 54%,#ffb493 100%) border-box;
 }
 .emblem-ring:has(img) img {
   position:absolute;
