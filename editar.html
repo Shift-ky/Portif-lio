@@ -66,10 +66,13 @@ function field(parent, label, value, change, kind = 'input') {
 function renderProjects() {
   const list = el('projects');
   list.replaceChildren();
+  const hint = document.createElement('p');
+  hint.textContent = 'Use a URL HTTPS do site publicado para gerar a prévia automaticamente. Se o link principal for um repositório, informe o endereço da demonstração no campo alternativo.';
+  list.append(hint);
   draft.projects.forEach((item,index) => {
     const card = document.createElement('div');
     card.className = 'project';
-    for (const [prop,label,kind] of [['name','Nome','input'],['tag','Categoria','input'],['summary','Descrição','textarea'],['url','Link do código ou projeto','input'],['demo','Link HTTPS da demonstração','input']]) {
+    for (const [prop,label,kind] of [['name','Nome','input'],['tag','Categoria','input'],['summary','Descrição','textarea'],['url','Link do código ou projeto','input'],['demo','Link alternativo da prévia (opcional)','input']]) {
       field(card,label,item[prop] || '',value => { item[prop] = value; },kind);
     }
     const remove = document.createElement('button');
@@ -113,8 +116,10 @@ function build() {
       article.append(node);
     }
     try {
-      const demo = new URL(project.demo);
-      if (demo.protocol === 'https:' && !demo.username && !demo.password) {
+      const override = project.demo?.trim();
+      const demo = new URL(override || project.url.trim());
+      const isCodeHost = ['github.com','www.github.com','gitlab.com','bitbucket.org','raw.githubusercontent.com'].includes(demo.hostname);
+      if (demo.protocol === 'https:' && !demo.username && !demo.password && (override || !isCodeHost)) {
         const details = doc.createElement('details');
         details.className = 'project-demo';
         const summary = doc.createElement('summary');
@@ -200,6 +205,8 @@ async function init() {
     };
     if (project.demo === undefined || (current && project.demo && project.demo.replace(/\/$/,'') === retiredPreviews[project.url]?.replace(/\/$/,''))) {
       project.demo = current?.demo || '';
+    } else if (current?.demo && project.demo && project.demo.startsWith('https://shift-ky.github.io/Portif-lio/demonstracao.html?projeto=') && current.demo.startsWith('https://shift-ky.github.io/Portif-lio/demonstracao.html?projeto=')) {
+      project.demo = current.demo;
     }
   });
   textFields.forEach(([label],index) => field(el('texts'),label,draft.texts[index],value => { draft.texts[index] = value; },'textarea'));
