@@ -91,8 +91,39 @@ footer { padding:1.15rem 0; color:var(--muted); font-size:.9rem; }
 .project-demo { margin:1rem 0 .65rem; }
 .project-demo summary { color:var(--coral); font-weight:700; cursor:pointer; }
 .project-demo iframe { display:block; width:100%; height:clamp(16rem,42vw,25rem); border:1px solid var(--line); border-radius:.5rem; background:var(--bg); margin:.75rem 0; }
+
+.emblem-ring:has(img) {
+  position:relative;
+  overflow:visible;
+  background:linear-gradient(180deg,var(--bg) 14%,color-mix(in srgb,var(--coral) 42%,#eefaff) 100%);
+}
+.emblem-ring:has(img) img {
+  position:absolute;
+  z-index:1;
+  width:121%;
+  height:121%;
+  max-width:none;
+  left:50%;
+  bottom:-8%;
+  transform:translateX(-50%);
+  border-radius:0;
+  object-fit:cover;
+  object-position:center 28%;
+  mask-image:radial-gradient(ellipse 67% 82% at 50% 35%,#000 49%,transparent 78%),linear-gradient(#000 61%,transparent 99%);
+  mask-composite:intersect;
+}
+.emblem-ring:has(img)::after {
+  content:"";
+  position:absolute;
+  z-index:2;
+  inset:52% -9% -8%;
+  background:radial-gradient(ellipse at 50% 95%,color-mix(in srgb,var(--coral) 28%,#eefaff) 0%,transparent 68%);
+  opacity:.64;
+  pointer-events:none;
+}
+
 </style>
-<style id="portfolio-customization" data-style="neon" data-bg="#090e19" data-accent="#667b7f">:root{--bg:#090e19;--coral:#667b7f;--peach:#667b7f;--panel:color-mix(in srgb,var(--bg) 90%,white)}.emblem-ring{overflow:hidden}.emblem-ring img{width:100%;height:100%;min-height:0;object-fit:cover;object-position:center 28%;border-radius:50%}.hero,.emblem{background:radial-gradient(circle at 75% 50%,color-mix(in srgb,var(--coral) 16%,transparent),transparent 65%)}.emblem-ring{box-shadow:0 0 2rem color-mix(in srgb,var(--coral) 30%,transparent)}.hero{background:repeating-linear-gradient(90deg,transparent 0 39px,#ffffff12 39px 40px)}.emblem-ring{box-shadow:0 0 3rem color-mix(in srgb,var(--coral) 45%,transparent)}</style></head>
+<style id="portfolio-customization" data-style="neon" data-bg="#090e19" data-accent="#667b7f">:root{--bg:#090e19;--coral:#667b7f;--peach:#667b7f;--panel:color-mix(in srgb,var(--bg) 90%,white)}.hero,.emblem{background:radial-gradient(circle at 75% 50%,color-mix(in srgb,var(--coral) 16%,transparent),transparent 65%)}.emblem-ring{box-shadow:0 0 2rem color-mix(in srgb,var(--coral) 30%,transparent)}.hero{background:repeating-linear-gradient(90deg,transparent 0 39px,#ffffff12 39px 40px)}.emblem-ring{box-shadow:0 0 3rem color-mix(in srgb,var(--coral) 45%,transparent)}</style></head>
 <body>
 <header><nav class="wrap" aria-label="Navegação principal"><a class="brand" href="#inicio"><span class="mark" aria-hidden="true">RC</span><strong>Robson Costa</strong></a><div class="links"><a href="#sobre">Sobre</a><a href="#experiencia">Experiência</a><a href="#projetos">Projetos</a><a href="#contato">Contato</a></div></nav></header>
 <main id="inicio">
