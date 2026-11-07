@@ -69,8 +69,8 @@ function renderProjects() {
   draft.projects.forEach((item,index) => {
     const card = document.createElement('div');
     card.className = 'project';
-    for (const [prop,label,kind] of [['name','Nome','input'],['tag','Categoria','input'],['summary','Descrição','textarea'],['url','Link (https://)','input']]) {
-      field(card,label,item[prop],value => { item[prop] = value; },kind);
+    for (const [prop,label,kind] of [['name','Nome','input'],['tag','Categoria','input'],['summary','Descrição','textarea'],['url','Link do código ou projeto','input'],['demo','Link HTTPS da demonstração','input']]) {
+      field(card,label,item[prop] || '',value => { item[prop] = value; },kind);
     }
     const remove = document.createElement('button');
     remove.textContent = 'Remover projeto';
@@ -112,8 +112,32 @@ function build() {
       node.textContent = value;
       article.append(node);
     }
+    try {
+      const demo = new URL(project.demo);
+      if (demo.protocol === 'https:' && !demo.username && !demo.password) {
+        const details = doc.createElement('details');
+        details.className = 'project-demo';
+        const summary = doc.createElement('summary');
+        summary.textContent = 'Ver prévia aqui';
+        const frame = doc.createElement('iframe');
+        frame.title = 'Prévia de ' + project.name;
+        frame.src = demo.href;
+        frame.loading = 'lazy';
+        frame.referrerPolicy = 'no-referrer';
+        const portfolioOrigin = 'https://shift-ky.github.io';
+        frame.setAttribute('sandbox', demo.origin === portfolioOrigin || demo.origin === location.origin ? 'allow-scripts' : 'allow-scripts allow-same-origin');
+        const link = doc.createElement('a');
+        link.className = 'project-demo-link';
+        link.href = demo.href;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.textContent = 'Abrir demonstração em nova aba';
+        details.append(summary,frame,link);
+        article.append(details);
+      }
+    } catch { /* Projetos sem link de demonstração não têm prévia. */ }
     if (/^https?:\/\/[^\s]+$/i.test(project.url)) {
-      const link = doc.createElement('a'); link.href = project.url; link.textContent = 'Ver projeto'; article.append(link);
+      const link = doc.createElement('a'); link.href = project.url; link.className = 'project-code'; link.textContent = 'Ver projeto'; article.append(link);
     }
     list.append(article);
   }
@@ -159,7 +183,8 @@ async function init() {
       name:article.querySelector('h3').textContent,
       tag:article.querySelector('.tag')?.textContent || '',
       summary:article.querySelector('p:not(.tag)')?.textContent || '',
-      url:article.querySelector('a')?.getAttribute('href') || ''
+      url:article.querySelector('.project-code, :scope > a')?.getAttribute('href') || '',
+      demo:article.querySelector('.project-demo iframe')?.getAttribute('src') || ''
     })),
     photo:source.querySelector('.emblem-ring img')?.getAttribute('src') || '',
     style:theme?.dataset.style || 'coral',
@@ -167,9 +192,12 @@ async function init() {
     accent:theme?.dataset.accent || presets.coral[1]
   };
   try { draft = JSON.parse(localStorage.getItem(key)) || defaults; } catch { draft = defaults; }
+  draft.projects.forEach(project => {
+    if (project.demo === undefined) project.demo = defaults.projects.find(item => item.url === project.url)?.demo || '';
+  });
   textFields.forEach(([label],index) => field(el('texts'),label,draft.texts[index],value => { draft.texts[index] = value; },'textarea'));
   renderProjects();
-  el('add').onclick = () => { draft.projects.push({name:'Novo projeto',tag:'',summary:'',url:''}); renderProjects(); queuePreview(); };
+  el('add').onclick = () => { draft.projects.push({name:'Novo projeto',tag:'',summary:'',url:'',demo:''}); renderProjects(); queuePreview(); };
   for (const id of ['bg','accent']) {
     el(id).value = draft[id];
     el(id).oninput = () => { draft[id] = el(id).value; queuePreview(); };
