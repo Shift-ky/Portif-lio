@@ -98,9 +98,10 @@ footer { padding:1.15rem 0; color:var(--muted); font-size:.9rem; }
   overflow:visible;
   width:88%;
   border:clamp(10px,2vw,18px) solid transparent;
+  box-shadow:none;
   background:
-    linear-gradient(to top,var(--bg) 0%,color-mix(in srgb,var(--bg) 82%,#263f4e) 100%) padding-box,
-    linear-gradient(to top,#963d35 0%,#f16955 54%,#ffb493 100%) border-box;
+    linear-gradient(to bottom,var(--bg),var(--bg)) padding-box,
+    linear-gradient(to bottom,#a78bfa 0%,#d946ef 42%,rgba(217,70,239,.35) 76%,transparent 100%) border-box;
 }
 .emblem-ring:has(img) img {
   position:absolute;
@@ -112,10 +113,10 @@ footer { padding:1.15rem 0; color:var(--muted); font-size:.9rem; }
   bottom:-7%;
   transform:translateX(-50%);
   border-radius:0;
-  object-fit:cover;
-  object-position:center 28%;
-  mask-image:radial-gradient(ellipse 67% 82% at 50% 35%,#000 49%,transparent 78%),linear-gradient(#000 61%,transparent 99%);
-  mask-composite:intersect;
+  object-fit:contain;
+  object-position:center bottom;
+  -webkit-mask-image:none;
+  mask-image:none;
 }
 
 </style>
