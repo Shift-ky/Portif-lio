@@ -92,10 +92,11 @@ footer { padding:1.15rem 0; color:var(--muted); font-size:.9rem; }
 .project-demo summary { color:var(--coral); font-weight:700; cursor:pointer; }
 .project-demo iframe { display:block; width:100%; height:clamp(16rem,42vw,25rem); border:1px solid var(--line); border-radius:.5rem; background:var(--bg); margin:.75rem 0; }
 
+.hero .emblem { background:none; }
 .emblem-ring:has(img) {
   position:relative;
   overflow:visible;
-  background:linear-gradient(180deg,var(--bg) 14%,color-mix(in srgb,var(--coral) 42%,#eefaff) 100%);
+  background:linear-gradient(to bottom,var(--bg) 0%,var(--bg) 35%,color-mix(in srgb,#eefaff 82%,var(--coral)) 100%);
 }
 .emblem-ring:has(img) img {
   position:absolute;
@@ -111,15 +112,6 @@ footer { padding:1.15rem 0; color:var(--muted); font-size:.9rem; }
   object-position:center 28%;
   mask-image:radial-gradient(ellipse 67% 82% at 50% 35%,#000 49%,transparent 78%),linear-gradient(#000 61%,transparent 99%);
   mask-composite:intersect;
-}
-.emblem-ring:has(img)::after {
-  content:"";
-  position:absolute;
-  z-index:2;
-  inset:52% -9% -8%;
-  background:radial-gradient(ellipse at 50% 95%,color-mix(in srgb,var(--coral) 28%,#eefaff) 0%,transparent 68%);
-  opacity:.64;
-  pointer-events:none;
 }
 
 </style>
