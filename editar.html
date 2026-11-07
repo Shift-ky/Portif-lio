@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Editar portfólio</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#101d26;color:#f4f6fa;font:1rem/1.5 system-ui}header,main{width:min(1500px,calc(100% - 2rem));margin:auto}header{padding:1rem 0}main{display:grid;grid-template-columns:minmax(300px,440px) minmax(0,1fr);gap:1rem}fieldset{margin:0 0 1rem;border:1px solid #49606b;border-radius:.65rem;padding:1rem}legend,a{color:#ff9b86}label{display:block;margin:.75rem 0 .25rem}input:not([type=color]),textarea,select{width:100%;background:#182b36;color:white;border:1px solid #58707c;border-radius:.35rem;padding:.55rem;font:inherit}textarea{min-height:5rem;resize:vertical}button{font:inherit;background:#ff9b86;color:#101d26;border:0;border-radius:.35rem;padding:.45rem .7rem;margin:.35rem .35rem .35rem 0;cursor:pointer}button:disabled{opacity:.55;cursor:default}iframe{width:100%;height:85vh;border:1px solid #49606b;border-radius:.65rem;background:#101d26}.preview{position:sticky;top:1rem;align-self:start}.project+.project{border-top:1px solid #49606b;margin-top:1rem;padding-top:1rem}p{margin:.5rem 0 1rem}@media(max-width:800px){main{grid-template-columns:1fr}.preview{position:static}iframe{height:75vh}}
+</style>
+<header><a href="./">Voltar ao portfólio</a><h1>Editar portfólio</h1><p>As mudanças ficam neste navegador. Para publicar, baixe o HTML e substitua o index.html no GitHub.</p><button id="save" disabled>Salvar rascunho</button><button id="download" disabled>Baixar index.html</button> <a href="https://github.com/Shift-ky/Portif-lio/edit/main/index.html" target="_blank" rel="noopener">Abrir editor do GitHub</a><p id="status" role="status">Carregando portfólio…</p></header>
+<main><div id="controls">
+<fieldset><legend>Textos</legend><div id="texts"></div></fieldset>
+<fieldset><legend>Foto de abertura</legend><label for="photo">Escolher JPG, PNG ou WebP (até 2 MB)</label><input type="file" id="photo" accept="image/jpeg,image/png,image/webp"><button id="remove-photo">Remover foto</button></fieldset>
+<fieldset><legend>Tema e estilo</legend><label for="style">Estilo</label><select id="style"><option value="coral">Tecnológico coral</option><option value="neon">Futurista azul</option><option value="minimal">Minimalista</option></select><label for="bg">Fundo</label><input id="bg" type="color"><label for="accent">Destaque</label><input id="accent" type="color"></fieldset>
+<fieldset><legend>Projetos</legend><div id="projects"></div><button id="add">Adicionar projeto</button></fieldset>
+</div><div class="preview"><iframe id="preview" title="Prévia do portfólio" sandbox=""></iframe></div></main>
+<script>
+const el = id => document.getElementById(id);
+const key = 'robson-portfolio-draft-v1';
+const status = message => { el('status').textContent = message; };
+const presets = {
+  coral: ['#101d26','#ff8c75'],
+  neon: ['#090e19','#7ce9ff'],
+  minimal: ['#15171c','#e2bd8d']
+};
+const textFields = [
+  ['Nome','.hero h1'], ['Cargo','.hero-title'], ['Apresentação','.hero .lead'],
+  ['Sobre mim','#sobre .about-grid > div > p:last-child'],
+  ['Competências (uma por linha)','#competencias .chips',true],
+  ['Formação','#competencias .wrap > p'], ['Mensagem de contato','#contato .wrap > p']
+];
+let source, draft, frame, recognition;
+function queuePreview() {
+  cancelAnimationFrame(frame);
+  frame = requestAnimationFrame(() => { el('preview').srcdoc = build(); });
+}
+function dictate(field) {
+  const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!Speech) { status('Ditado indisponível neste navegador. Você pode digitar normalmente.'); return; }
+  if (recognition) { recognition.stop(); return; }
+  const session = new Speech();
+  recognition = session;
+  session.lang = 'pt-BR';
+  session.onresult = event => {
+    const speech = Array.from(event.results).map(result => result[0].transcript).join(' ');
+    field.value = [field.value.trimEnd(),speech].filter(Boolean).join(' ');
+    field.dispatchEvent(new Event('input',{bubbles:true}));
+    status('Ditado inserido.');
+  };
+  session.onerror = () => status('Não foi possível usar o microfone. Confira a permissão e tente novamente.');
+  session.onend = () => { recognition = null; };
+  try { session.start(); status('Ouvindo em português. Clique em Ditar novamente para encerrar.'); }
+  catch { recognition = null; status('Não foi possível iniciar o ditado.'); }
+}
+function field(parent, label, value, change, kind = 'input') {
+  const wrapper = document.createElement('label');
+  const input = document.createElement(kind);
+  wrapper.append(label,input);
+  parent.append(wrapper);
+  input.value = value;
+  input.addEventListener('input', () => { change(input.value); queuePreview(); });
+  if (kind === 'textarea') {
+    const mic = document.createElement('button');
+    mic.textContent = 'Ditar';
+    mic.setAttribute('aria-label','Ditar: ' + label);
+    mic.onclick = () => dictate(input);
+    parent.append(mic);
+  }
+}
+function renderProjects() {
+  const list = el('projects');
+  list.replaceChildren();
+  draft.projects.forEach((item,index) => {
+    const card = document.createElement('div');
+    card.className = 'project';
+    for (const [prop,label,kind] of [['name','Nome','input'],['tag','Categoria','input'],['summary','Descrição','textarea'],['url','Link (https://)','input']]) {
+      field(card,label,item[prop],value => { item[prop] = value; },kind);
+    }
+    const remove = document.createElement('button');
+    remove.textContent = 'Remover projeto';
+    remove.onclick = () => { draft.projects.splice(index,1); renderProjects(); queuePreview(); };
+    card.append(remove);
+    list.append(card);
+  });
+}
+function build() {
+  const doc = source.cloneNode(true);
+  const previous = doc.querySelector('#portfolio-customization');
+  if (previous) previous.remove();
+  textFields.forEach(([,selector,list],index) => {
+    const target = doc.querySelector(selector);
+    const value = draft.texts[index];
+    if (list) {
+      target.replaceChildren();
+      value.split('\n').filter(line => line.trim()).forEach(line => {
+        const li = doc.createElement('li'); li.textContent = line.trim(); target.append(li);
+      });
+    } else if (index === 0) {
+      const words = value.trim().split(/\s+/);
+      target.textContent = words.length > 1 ? words.slice(0,-1).join(' ') + ' ' : value;
+      if (words.length > 1) {
+        const last = doc.createElement('span'); last.textContent = words.at(-1); target.append(last);
+      }
+      doc.querySelector('.brand strong').textContent = value;
+      doc.querySelector('footer .wrap').textContent = value + ' · Portfólio profissional';
+      doc.title = value + ' | Portfólio';
+    } else target.textContent = value;
+  });
+  const list = doc.querySelector('#projetos .grid');
+  list.replaceChildren();
+  for (const project of draft.projects) {
+    const article = doc.createElement('article');
+    for (const [tag,value] of [['p',project.tag],['h3',project.name],['p',project.summary]]) {
+      const node = doc.createElement(tag);
+      if (value === project.tag && !article.childElementCount) node.className = 'tag';
+      node.textContent = value;
+      article.append(node);
+    }
+    if (/^https?:\/\/[^\s]+$/i.test(project.url)) {
+      const link = doc.createElement('a'); link.href = project.url; link.textContent = 'Ver projeto'; article.append(link);
+    }
+    list.append(article);
+  }
+  const ring = doc.querySelector('.emblem-ring');
+  ring.replaceChildren();
+  if (/^data:image\/(jpeg|png|webp);base64,[a-z0-9+/=]+$/i.test(draft.photo)) {
+    const photo = doc.createElement('img');
+    photo.src = draft.photo;
+    photo.alt = 'Retrato de ' + draft.texts[0];
+    ring.append(photo);
+    ring.parentElement.removeAttribute('aria-hidden');
+  } else {
+    const initials = doc.createElement('span');
+    initials.textContent = draft.texts[0].trim().split(/\s+/).map(part => part[0]).filter(Boolean).slice(0,2).join('').toUpperCase();
+    ring.append(initials);
+    ring.parentElement.setAttribute('aria-hidden','true');
+  }
+  const theme = doc.createElement('style');
+  theme.id = 'portfolio-customization';
+  theme.dataset.style = draft.style;
+  theme.dataset.bg = draft.bg;
+  theme.dataset.accent = draft.accent;
+  theme.textContent = ':root{--bg:'+draft.bg+';--coral:'+draft.accent+';--peach:'+draft.accent+';--panel:color-mix(in srgb,var(--bg) 90%,white)}' +
+    '.emblem-ring{overflow:hidden}.emblem-ring img{width:100%;height:100%;min-height:0;object-fit:cover;object-position:center 28%;border-radius:50%}' +
+    '.hero,.emblem{background:radial-gradient(circle at 75% 50%,color-mix(in srgb,var(--coral) 16%,transparent),transparent 65%)}' +
+    '.emblem-ring{box-shadow:0 0 2rem color-mix(in srgb,var(--coral) 30%,transparent)}' +
+    (draft.style === 'minimal' ? '.hero,.emblem,#contato,article{background:var(--bg);box-shadow:none}.emblem::before,.emblem::after{display:none}.emblem-ring{box-shadow:none;border-width:3px}' :
+     draft.style === 'neon' ? '.hero{background:repeating-linear-gradient(90deg,transparent 0 39px,#ffffff12 39px 40px)}.emblem-ring{box-shadow:0 0 3rem color-mix(in srgb,var(--coral) 45%,transparent)}' : '');
+  doc.head.append(theme);
+  return '<!doctype html>\n'+doc.documentElement.outerHTML;
+}
+async function init() {
+  const response = await fetch('./index.html',{cache:'no-cache'});
+  if (!response.ok) throw Error('Portfólio indisponível');
+  source = new DOMParser().parseFromString(await response.text(),'text/html');
+  const theme = source.querySelector('#portfolio-customization');
+  const defaults = {
+    texts:textFields.map(([,selector,list]) => {
+      const target = source.querySelector(selector);
+      return list ? Array.from(target.children,node => node.textContent).join('\n') : target.textContent.trim();
+    }),
+    projects:Array.from(source.querySelectorAll('#projetos article'), article => ({
+      name:article.querySelector('h3').textContent,
+      tag:article.querySelector('.tag')?.textContent || '',
+      summary:article.querySelector('p:not(.tag)')?.textContent || '',
+      url:article.querySelector('a')?.getAttribute('href') || ''
+    })),
+    photo:source.querySelector('.emblem-ring img')?.getAttribute('src') || '',
+    style:theme?.dataset.style || 'coral',
+    bg:theme?.dataset.bg || presets.coral[0],
+    accent:theme?.dataset.accent || presets.coral[1]
+  };
+  try { draft = JSON.parse(localStorage.getItem(key)) || defaults; } catch { draft = defaults; }
+  textFields.forEach(([label],index) => field(el('texts'),label,draft.texts[index],value => { draft.texts[index] = value; },'textarea'));
+  renderProjects();
+  el('add').onclick = () => { draft.projects.push({name:'Novo projeto',tag:'',summary:'',url:''}); renderProjects(); queuePreview(); };
+  for (const id of ['bg','accent']) {
+    el(id).value = draft[id];
+    el(id).oninput = () => { draft[id] = el(id).value; queuePreview(); };
+  }
+  el('style').value = draft.style;
+  el('style').onchange = () => {
+    draft.style = el('style').value;
+    [el('bg').value,el('accent').value] = [draft.bg,draft.accent] = presets[draft.style];
+    queuePreview();
+  };
+  el('photo').onchange = async () => {
+    const file = el('photo').files[0];
+    if (!file) return;
+    if (!/^image\/(jpeg|png|webp)$/.test(file.type) || file.size > 2*1024*1024) {
+      status('Escolha uma foto JPG, PNG ou WebP de até 2 MB.'); el('photo').value = ''; return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => { draft.photo = reader.result; queuePreview(); status('Foto adicionada à prévia.'); };
+    reader.onerror = () => status('Não foi possível ler a foto.');
+    reader.readAsDataURL(file);
+  };
+  el('remove-photo').onclick = () => { draft.photo = ''; el('photo').value = ''; queuePreview(); };
+  el('save').onclick = () => {
+    try { localStorage.setItem(key,JSON.stringify(draft)); status('Rascunho salvo neste navegador.'); }
+    catch { status('Não foi possível salvar neste navegador. Baixe o HTML para guardar sua edição.'); }
+  };
+  el('download').onclick = () => {
+    const url = URL.createObjectURL(new Blob([build()],{type:'text/html;charset=utf-8'}));
+    const anchor = document.createElement('a'); anchor.href = url; anchor.download = 'index.html'; anchor.click();
+    setTimeout(() => URL.revokeObjectURL(url),1000);
+  };
+  el('save').disabled = el('download').disabled = false;
+  queuePreview(); status('Editor pronto.');
+}
+init().catch(() => status('Não foi possível carregar o portfólio. Recarregue a página.'));
+</script></html>
