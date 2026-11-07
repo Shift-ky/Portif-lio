@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'none'; form-action 'none'; base-uri 'none'">
 <title>Demonstração do projeto</title>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#0c1520;color:#edf5ff;font:14px/1.45 system-ui,sans-serif}main{max-width:780px;margin:auto;padding:14px}h1,h2,p{margin:0 0 9px}h1{font-size:1.6rem}h2{font-size:1.2rem}header p,small{color:#c4d2e3}.badge{color:#7df5d0;font-weight:bold}nav,.actions,form,.totals{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}button,input,select{font:inherit;border:1px solid #567084;border-radius:7px;padding:6px 8px;background:#192a3c;color:#fff}button{cursor:pointer}button[aria-current],button[type=submit]{background:#7df5d0;color:#10201d;border-color:#7df5d0}input{width:min(100%,155px)}label{display:grid;gap:2px}article,.totals>div{background:#142334;border:1px solid #354d64;border-radius:8px;padding:9px;margin-bottom:6px}.row{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px;align-items:center}.row strong{overflow-wrap:anywhere}.totals>div{flex:1;min-width:100px}.totals strong{display:block;color:#7df5d0}#notice{color:#7df5d0;min-height:1.4em}
+*{box-sizing:border-box}body{margin:0;background:#0c1520;color:#edf5ff;font:14px/1.45 system-ui,sans-serif}main{max-width:780px;margin:auto;padding:14px}h1,h2,p{margin:0 0 9px}h1{font-size:1.6rem}h2{font-size:1.2rem}header p,small{color:#c4d2e3}.badge{color:#7df5d0;font-weight:bold}nav,.actions,form,.totals{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}button,input,select{font:inherit;border:1px solid #567084;border-radius:7px;padding:6px 8px;background:#192a3c;color:#fff}button{cursor:pointer}button[aria-current],form button{background:#7df5d0;color:#10201d;border-color:#7df5d0}input{width:min(100%,155px)}label{display:grid;gap:2px}article,.totals>div{background:#142334;border:1px solid #354d64;border-radius:8px;padding:9px;margin-bottom:6px}.row{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px;align-items:center}.row strong{overflow-wrap:anywhere}.totals>div{flex:1;min-width:100px}.totals strong{display:block;color:#7df5d0}#notice{color:#7df5d0;min-height:1.4em}
 </style>
 <main>
 <header><span class="badge">DEMONSTRAÇÃO · DADOS FICTÍCIOS</span><h1 id="brand"></h1><p>Teste à vontade. Ao recarregar, as alterações são descartadas.</p><button id="reset" type="button">Reiniciar demonstração</button></header>
@@ -102,15 +102,21 @@ function render(message = '') {
     make('option','Receita',type);
   }
   const submit = make('button','Salvar na demonstração',form);
-  submit.type = 'submit';
+  submit.type = 'button';
   let editing = null;
-  form.onsubmit = event => {
-    event.preventDefault();
+  submit.onclick = () => {
+    if (!form.reportValidity()) return;
     if (!name.value.trim()) { name.focus(); return; }
     const row = {name:name.value.trim(),value:value ? Number(value.value) : undefined,type:type?.value,done:editing?.done};
     if (editing) Object.assign(editing,row);
     else records[active].push(row);
     render('Alteração salva temporariamente.');
+  };
+  form.onkeydown = event => {
+    if (event.key === 'Enter' && event.target instanceof HTMLInputElement) {
+      event.preventDefault();
+      submit.click();
+    }
   };
   for (const [index,row] of records[active].entries()) {
     const line = make('article','',view);
