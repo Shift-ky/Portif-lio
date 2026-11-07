@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="pt-BR">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'none'; form-action 'none'; base-uri 'none'">
+<title>Demonstração do projeto</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#0c1520;color:#edf5ff;font:14px/1.45 system-ui,sans-serif}main{max-width:780px;margin:auto;padding:14px}h1,h2,p{margin:0 0 9px}h1{font-size:1.6rem}h2{font-size:1.2rem}header p,small{color:#c4d2e3}.badge{color:#7df5d0;font-weight:bold}nav,.actions,form,.totals{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}button,input,select{font:inherit;border:1px solid #567084;border-radius:7px;padding:6px 8px;background:#192a3c;color:#fff}button{cursor:pointer}button[aria-current],button[type=submit]{background:#7df5d0;color:#10201d;border-color:#7df5d0}input{width:min(100%,155px)}label{display:grid;gap:2px}article,.totals>div{background:#142334;border:1px solid #354d64;border-radius:8px;padding:9px;margin-bottom:6px}.row{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px;align-items:center}.row strong{overflow-wrap:anywhere}.totals>div{flex:1;min-width:100px}.totals strong{display:block;color:#7df5d0}#notice{color:#7df5d0;min-height:1.4em}
+</style>
+<main>
+<header><span class="badge">DEMONSTRAÇÃO · DADOS FICTÍCIOS</span><h1 id="brand"></h1><p>Teste à vontade. Ao recarregar, as alterações são descartadas.</p><button id="reset" type="button">Reiniciar demonstração</button></header>
+<nav id="nav" aria-label="Páginas da demonstração"></nav>
+<h2 id="heading"></h2>
+<p id="notice" role="status"></p>
+<section id="view"></section>
+</main>
+<script>
+const pocket = new URLSearchParams(location.search).get('projeto') === 'pocket';
+const pages = pocket ? ['Painel','Finanças','Carteiras','Contas fixas','Metas','Feira','Estoque','Conferência','Moto','Administração'] :
+  ['Visão geral','Lançamentos','Contas a pagar','Cartões','Metas','Lista de compras','Telegram','Família e acessos','Meu cadastro','Administração geral'];
+const specs = {
+  'Finanças':['Descrição','Valor','money', [['Salário de exemplo',3500,'Receita'],['Mercado',320,'Despesa']]],
+  'Lançamentos':['Descrição','Valor','money', [['Salário de exemplo',3500,'Receita'],['Mercado',320,'Despesa']]],
+  'Carteiras':['Nome da carteira','Saldo inicial','currency',[['Banco',1500],['Dinheiro',250]]],
+  'Contas fixas':['Nome da conta','Valor','currency',[['Internet',99],['Energia',150]]],
+  'Contas a pagar':['Nome da conta','Valor','currency',[['Internet',99],['Energia',150]]],
+  'Cartões':['Nome do cartão','Limite','currency',[['Cartão de exemplo',1500]]],
+  'Metas':['Nome da meta','Valor alvo','currency',[['Reserva de emergência',5000]]],
+  'Feira':['Produto','Quantidade','count',[['Arroz',2],['Feijão',1]]],
+  'Lista de compras':['Produto','Quantidade','count',[['Arroz',2],['Feijão',1]]],
+  'Estoque':['Produto','Quantidade','count',[['Arroz',1],['Macarrão',3]]],
+  'Conferência':['Descrição','Valor conferido','currency',[['Feira de exemplo',125]]],
+  'Moto':['Descrição','Valor','currency',[['Abastecimento',45]]],
+  'Telegram':['Mensagem de exemplo','', 'text',[['Despesa de mercado registrada na demonstração']]],
+  'Família e acessos':['Nome do integrante','', 'text',[['Família de demonstração'],['Integrante de exemplo']]],
+  'Meu cadastro':['Nome de exibição','', 'text',[['Visitante da demonstração']]],
+  'Administração geral':['Nome da família','', 'text',[['Família de demonstração']]],
+  'Administração':['Nome do perfil','', 'text',[['Perfil de demonstração']]]
+};
+let active = pages[0];
+let records;
+const $ = id => document.getElementById(id);
+const money = new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'});
+function reset() {
+  records = Object.fromEntries(Object.entries(specs).map(([key,spec]) => [key,spec[3].map(([name,value,type]) => ({name,value,type}))]));
+  active = pages[0];
+}
+function make(tag,text,root) {
+  const el = document.createElement(tag);
+  el.textContent = text;
+  root.append(el);
+  return el;
+}
+function btn(label,root,action) {
+  const button = make('button',label,root);
+  button.type = 'button';
+  button.onclick = action;
+  return button;
+}
+function field(form,label,type) {
+  const wrap = make('label',label,form);
+  const input = document.createElement('input');
+  input.type = type;
+  input.required = true;
+  wrap.append(input);
+  return input;
+}
+function render(message = '') {
+  $('nav').replaceChildren();
+  for (const page of pages) {
+    const button = btn(page,$('nav'),() => { active = page; render(); });
+    if (page === active) button.setAttribute('aria-current','page');
+  }
+  $('heading').textContent = active;
+  $('notice').textContent = message;
+  const view = $('view');
+  view.replaceChildren();
+  if (active === pages[0]) {
+    const entries = records[pocket ? 'Finanças' : 'Lançamentos'];
+    const sum = type => entries.filter(row => row.type === type).reduce((total,row) => total+row.value,0);
+    const inc = sum('Receita'), exp = sum('Despesa');
+    const totals = make('div','',view);
+    totals.className = 'totals';
+    for (const [label,value] of [['Saldo',inc-exp],['Receitas',inc],['Despesas',exp]]) {
+      const box = make('div',label,totals);
+      make('strong',money.format(value),box);
+    }
+    make('p','Use o menu para navegar e testar os lançamentos.',view);
+    return;
+  }
+  const [nameLabel,valueLabel,kind] = specs[active];
+  const form = make('form','',view);
+  const name = field(form,nameLabel,'text');
+  name.maxLength = 100;
+  const value = kind === 'text' ? null : field(form,valueLabel,'number');
+  if (value) { value.min = '0'; value.step = kind === 'count' ? '1' : '0.01'; }
+  let type;
+  if (kind === 'money') {
+    const label = make('label','Tipo',form);
+    type = make('select','',label);
+    make('option','Despesa',type);
+    make('option','Receita',type);
+  }
+  const submit = make('button','Salvar na demonstração',form);
+  submit.type = 'submit';
+  let editing = null;
+  form.onsubmit = event => {
+    event.preventDefault();
+    if (!name.value.trim()) { name.focus(); return; }
+    const row = {name:name.value.trim(),value:value ? Number(value.value) : undefined,type:type?.value,done:editing?.done};
+    if (editing) Object.assign(editing,row);
+    else records[active].push(row);
+    render('Alteração salva temporariamente.');
+  };
+  for (const [index,row] of records[active].entries()) {
+    const line = make('article','',view);
+    line.className = 'row';
+    const caption = [row.name,row.type,value ? (kind === 'count' ? row.value+' un.' : money.format(row.value)) : '',row.done ? 'Concluído' : ''].filter(Boolean).join(' · ');
+    make('strong',caption,line);
+    const actions = make('div','',line);
+    btn('Editar',actions,() => { editing=row; name.value=row.name; if (value) value.value=row.value; if (type) type.value=row.type; name.focus(); });
+    if (['Feira','Lista de compras','Contas a pagar','Conferência'].includes(active)) {
+      btn(row.done ? 'Reabrir' : 'Concluir',actions,() => { row.done=!row.done; render('Alteração salva temporariamente.'); });
+    }
+    btn('Remover',actions,() => { records[active].splice(index,1); render('Registro removido da demonstração.'); });
+  }
+}
+$('brand').textContent = pocket ? 'Pocket Friends' : 'Mar IA';
+$('reset').onclick = () => { reset(); render('Demonstração reiniciada.'); };
+reset();
+render();
+</script>
+</html>
