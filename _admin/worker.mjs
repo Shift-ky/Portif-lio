@@ -52,7 +52,12 @@ async function file(token,path) {
   const result = await github(api+'/contents/'+path+'?ref=main',token);
   if (!result.ok) return null;
   const data = await result.json();
-  return data.encoding === 'base64' ? {sha:data.sha,html:decoder.decode(unb64(data.content))} : null;
+  if (data.encoding === 'base64') return {sha:data.sha,html:decoder.decode(unb64(data.content))};
+  if (data.encoding !== 'none' || !/^[a-f0-9]{40}$/.test(data.sha)) return null;
+  const blob = await github(api+'/git/blobs/'+data.sha,token);
+  if (!blob.ok) return null;
+  const payload = await blob.json();
+  return payload.encoding === 'base64' ? {sha:data.sha,html:decoder.decode(unb64(payload.content))} : null;
 }
 const loginPage = '<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Editor do portfólio</title><h1>Editor do portfólio</h1><p>Área de edição da conta Shift-ky.</p><a href="/login">Entrar com GitHub</a></html>';
 const publishScript = '<script>' + (() => {
